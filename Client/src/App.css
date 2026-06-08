@@ -1,0 +1,92 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background: var(--primary);
+  color: white;
+  padding: 1.5rem 2rem;
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.logo {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.tagline {
+  margin: 0.25rem 0 0;
+  opacity: 0.85;
+  font-size: 0.95rem;
+}
+
+.home {
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.hero h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.75rem;
+  color: var(--text-primary);
+}
+
+.hero p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.status-card {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.status-card h3 {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.status {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.status.loading {
+  color: var(--text-secondary);
+}
+
+.status.error {
+  color: var(--error);
+}
+
+.status.success p {
+  margin: 0.25rem 0;
+  color: var(--success);
+}
+
+.timestamp {
+  font-size: 0.8rem !important;
+  color: var(--text-secondary) !important;
+  margin-top: 0.5rem !important;
+}
