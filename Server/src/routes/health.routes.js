@@ -1,23 +1,9 @@
 const express = require('express');
-const mongoose = require('mongoose');
+const { getHealth } = require('../controllers/health.controller');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  const dbState = mongoose.connection.readyState;
-  const dbStatus = {
-    0: 'disconnected',
-    1: 'connected',
-    2: 'connecting',
-    3: 'disconnecting',
-  };
-
-  res.json({
-    success: true,
-    message: 'DRVT Mall API is running',
-    timestamp: new Date().toISOString(),
-    database: dbStatus[dbState] || 'unknown',
-  });
-});
+// 서버와 데이터베이스 연결 상태를 확인하는 헬스체크 엔드포인트입니다.
+router.get('/', getHealth);
 
 module.exports = router;

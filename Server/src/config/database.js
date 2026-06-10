@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// MongoDB에 연결합니다. 연결 실패 시 프로세스를 종료합니다.
 const connectDB = async () => {
   const uri = process.env.MONGODB_URI;
 

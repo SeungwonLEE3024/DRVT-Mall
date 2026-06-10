@@ -1,0 +1,450 @@
+.mypage {
+  min-height: 100vh;
+  background: #f8fafc;
+  color: #111827;
+}
+
+.mypage-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 48px 1fr 48px;
+  align-items: center;
+  height: 58px;
+  padding: 0 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: #fff;
+  text-align: center;
+}
+
+.mypage-topbar button {
+  border: 0;
+  background: transparent;
+  color: #111827;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.mypage-container {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+.mypage-layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.mypage-profile,
+.mypage-addresses {
+  grid-column: 1;
+}
+
+.mypage-orders {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+.mypage-card {
+  padding: 1.6rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.mypage-card h1 {
+  margin: 0 0 0.4rem;
+  font-size: 1.15rem;
+}
+
+.mypage-card h1 em {
+  font-style: normal;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.mypage-email {
+  margin: 0 0 1.2rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.mypage-form {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.mypage-form label {
+  display: grid;
+  gap: 0.4rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.mypage-form input:not([type='checkbox']) {
+  height: 44px;
+  padding: 0 0.85rem;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 0.92rem;
+}
+
+.mypage-form input:focus {
+  outline: 2px solid #111827;
+  outline-offset: 0;
+  border-color: #111827;
+}
+
+.mypage-checkbox {
+  display: flex !important;
+  align-items: center;
+  gap: 0.55rem;
+  font-weight: 500 !important;
+  color: #374151;
+}
+
+.mypage-checkbox input {
+  width: 16px;
+  height: 16px;
+}
+
+.mypage-message {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.mypage-message.success {
+  color: #047857;
+}
+
+.mypage-message.error {
+  color: #dc2626;
+}
+
+.mypage-save {
+  height: 48px;
+  border: 0;
+  border-radius: 10px;
+  background: #050505;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.mypage-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.mypage-state {
+  margin: 1rem 0 0;
+  color: #6b7280;
+}
+
+.mypage-state.error {
+  color: #dc2626;
+}
+
+.mypage-orders-empty {
+  display: grid;
+  justify-items: center;
+  gap: 0.8rem;
+  padding: 2.5rem 0;
+  color: #6b7280;
+}
+
+.mypage-orders-empty button {
+  padding: 0.6rem 1.4rem;
+  border: 1px solid #111827;
+  border-radius: 999px;
+  background: transparent;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mypage-order-list {
+  display: grid;
+  gap: 0.9rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mypage-order {
+  padding: 1rem 1.1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.mypage-order-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.mypage-order-head strong {
+  display: block;
+  font-size: 0.95rem;
+}
+
+.mypage-order-head span {
+  font-size: 0.82rem;
+  color: #6b7280;
+}
+
+.mypage-order-status {
+  flex-shrink: 0;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #374151 !important;
+  font-size: 0.8rem !important;
+  font-weight: 700;
+}
+
+.mypage-order-status.status-paid,
+.mypage-order-status.status-delivered {
+  background: #ecfdf5;
+  color: #047857 !important;
+}
+
+.mypage-order-status.status-shipped,
+.mypage-order-status.status-preparing {
+  background: #eff6ff;
+  color: #1d4ed8 !important;
+}
+
+.mypage-order-status.status-cancelled,
+.mypage-order-status.status-refunded {
+  background: #fef2f2;
+  color: #dc2626 !important;
+}
+
+.mypage-order-items {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.mypage-order-item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.mypage-order-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #f9fafb;
+  overflow: hidden;
+  color: #d1d5db;
+}
+
+.mypage-order-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.mypage-order-item-info {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.mypage-order-item-info strong {
+  font-size: 0.88rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mypage-order-item-info span {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.mypage-order-shipping {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.mypage-order-shipping > span {
+  font-size: 0.78rem;
+  color: #9ca3af;
+}
+
+.mypage-order-shipping p {
+  margin: 0.25rem 0 0;
+  font-size: 0.86rem;
+  color: #4b5563;
+  line-height: 1.45;
+}
+
+.mypage-order-shipping p strong {
+  font-size: 0.88rem;
+  color: #111827;
+}
+
+.mypage-order-shipping p em {
+  font-style: normal;
+  color: #6b7280;
+}
+
+.mypage-order-body {
+  display: flex;
+  gap: 2rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.mypage-order-body div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.mypage-order-body span {
+  font-size: 0.78rem;
+  color: #9ca3af;
+}
+
+.mypage-order-body strong {
+  font-size: 0.92rem;
+}
+
+.mypage-orders-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.2rem;
+}
+
+.mypage-orders-pagination button {
+  padding: 0.45rem 0.9rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.mypage-orders-pagination button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.mypage-orders-pagination span {
+  font-size: 0.88rem;
+  color: #374151;
+}
+
+.mypage-address-list {
+  display: grid;
+  gap: 0.7rem;
+  margin: 1rem 0 1.4rem;
+  padding: 0;
+  list-style: none;
+}
+
+.mypage-address {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.mypage-address-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mypage-address-head strong {
+  font-size: 0.92rem;
+}
+
+.mypage-address-default {
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: #047857;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.mypage-address-info p {
+  margin: 0.3rem 0 0;
+  color: #4b5563;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.mypage-address-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 0.4rem;
+}
+
+.mypage-address-actions button {
+  padding: 0.35rem 0.7rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.mypage-address-actions button.danger {
+  border-color: #fecaca;
+  color: #dc2626;
+}
+
+.mypage-address-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mypage-address-form {
+  margin-top: 1.2rem;
+  padding-top: 1.2rem;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.mypage-address-form h2 {
+  margin: 0;
+  font-size: 0.98rem;
+}
+
+@media (max-width: 860px) {
+  .mypage-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .mypage-profile,
+  .mypage-addresses,
+  .mypage-orders {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}

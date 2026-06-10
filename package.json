@@ -1,0 +1,12 @@
+{
+  "name": "drvt-mall",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "npm --prefix Client run dev --",
+    "dev:client": "npm --prefix Client run dev --",
+    "dev:server": "npm --prefix Server run dev",
+    "build": "npm --prefix Client run build",
+    "lint": "npm --prefix Client run lint"
+  }
+}
