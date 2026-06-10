@@ -2,11 +2,20 @@
   "name": "drvt-mall",
   "private": true,
   "version": "1.0.0",
+  "engines": {
+    "node": "24.x",
+    "npm": "11.x"
+  },
+  "workspaces": [
+    "Client",
+    "Server"
+  ],
   "scripts": {
-    "dev": "npm --prefix Client run dev --",
-    "dev:client": "npm --prefix Client run dev --",
-    "dev:server": "npm --prefix Server run dev",
-    "build": "npm --prefix Client run build",
-    "lint": "npm --prefix Client run lint"
+    "dev": "npm run dev --workspace Client --",
+    "dev:client": "npm run dev --workspace Client --",
+    "dev:server": "npm run dev --workspace Server",
+    "build:client": "npm run build --workspace Client",
+    "start": "npm start --workspace Server",
+    "lint": "npm run lint --workspace Client"
   }
 }
