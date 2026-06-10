@@ -3,7 +3,7 @@ const Product = require('../models/Product');
 
 // 클라이언트 응답에 사용할 장바구니 데이터 형태를 통일합니다.
 const formatCart = (cart) => {
-  const items = cart.items.map((item) => {
+  const items = cart.items.filter((item) => item.product).map((item) => {
     const product = item.product;
     const itemPrice = product?.price || 0;
     const subtotal = itemPrice * item.quantity;
@@ -51,7 +51,8 @@ const findOrCreateCart = async (userId) => {
 };
 
 // 응답 직전에 상품 정보를 채워 장바구니 데이터를 완성합니다.
-const populateCart = (cart) => cart.populate('items.product');
+const populateCart = (cart) =>
+  cart.populate({ path: 'items.product', match: { isDeleted: { $ne: true } } });
 
 // 로그인한 사용자의 장바구니를 조회합니다.
 const getCart = async (req, res, next) => {
@@ -73,7 +74,7 @@ const addCartItem = async (req, res, next) => {
   try {
     const { productId } = req.body;
     const quantity = Number(req.body.quantity || 1);
-    const product = await Product.findById(productId);
+    const product = await Product.findOne({ _id: productId, isDeleted: { $ne: true } });
 
     if (!product) {
       return res.status(404).json({
@@ -114,7 +115,7 @@ const updateCartItem = async (req, res, next) => {
   try {
     const { productId } = req.params;
     const quantity = Number(req.body.quantity);
-    const product = await Product.findById(productId);
+    const product = await Product.findOne({ _id: productId, isDeleted: { $ne: true } });
 
     if (!product) {
       return res.status(404).json({

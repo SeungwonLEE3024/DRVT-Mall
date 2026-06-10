@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { fetchProducts } from '../services/api'
+import { useAuth } from '../hooks/useAuth'
+import { deleteProduct, fetchAdminProducts } from '../services/api'
 import './ProductCreatePage.css'
 import './ProductListPage.css'
 
@@ -30,6 +31,7 @@ function formatPrice(value, currency = 'KRW') {
  */
 function ProductListPage() {
   const navigate = useNavigate()
+  const { token } = useAuth()
   const [products, setProducts] = useState([])
   const [pagination, setPagination] = useState({
     total: 0,
@@ -42,36 +44,72 @@ function ProductListPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
   const [error, setError] = useState('')
+  const [message, setMessage] = useState('')
   const [isLoading, setIsLoading] = useState(true)
+  const [deletingId, setDeletingId] = useState('')
+
+  const loadProducts = useCallback(async () => {
+    if (!token) {
+      setError('관리자 인증 정보가 없습니다.')
+      setIsLoading(false)
+      return
+    }
+
+    setIsLoading(true)
+    setError('')
+
+    try {
+      const data = await fetchAdminProducts(token, { page: currentPage, limit: PAGE_LIMIT })
+      setProducts(data.products || [])
+      setPagination({
+        total: data.total || 0,
+        page: data.page || currentPage,
+        limit: data.limit || PAGE_LIMIT,
+        totalPages: data.totalPages || 1,
+        hasNextPage: Boolean(data.hasNextPage),
+        hasPrevPage: Boolean(data.hasPrevPage),
+      })
+    } catch (loadError) {
+      setError(loadError?.message || '상품 목록을 불러오지 못했습니다.')
+    } finally {
+      setIsLoading(false)
+    }
+  }, [currentPage, token])
 
   // currentPage가 바뀔 때마다 해당 페이지의 상품 목록을 서버에서 다시 불러온다.
   useEffect(() => {
-    // 상품 목록 API를 호출해 products/pagination 상태를 갱신하고,
-    // 실패 시 에러 메시지를 설정한다.
-    const loadProducts = async () => {
-      setIsLoading(true)
-      setError('')
-
-      try {
-        const data = await fetchProducts({ page: currentPage, limit: PAGE_LIMIT })
-        setProducts(data.products || [])
-        setPagination({
-          total: data.total || 0,
-          page: data.page || currentPage,
-          limit: data.limit || PAGE_LIMIT,
-          totalPages: data.totalPages || 1,
-          hasNextPage: Boolean(data.hasNextPage),
-          hasPrevPage: Boolean(data.hasPrevPage),
-        })
-      } catch (loadError) {
-        setError(loadError?.message || '상품 목록을 불러오지 못했습니다.')
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
     loadProducts()
-  }, [currentPage])
+  }, [loadProducts])
+
+  const handleDeleteProduct = async (event, product) => {
+    event.stopPropagation()
+
+    if (!token || product.isDeleted) return
+
+    const confirmed = window.confirm(
+      `"${product.name}" 상품을 삭제하시겠습니까?\n주문 이력이 있으면 상품관리 목록에만 남고 고객에게는 노출되지 않습니다.`
+    )
+
+    if (!confirmed) return
+
+    setDeletingId(product.id)
+    setError('')
+    setMessage('')
+
+    try {
+      const result = await deleteProduct(token, product.id)
+      setMessage(
+        result.deletionType === 'soft'
+          ? '주문 이력이 있어 상품관리 목록에는 남기고 고객에게는 숨겼습니다.'
+          : '상품을 서버에서 삭제했습니다.'
+      )
+      await loadProducts()
+    } catch (deleteError) {
+      setError(deleteError?.message || '상품을 삭제하지 못했습니다.')
+    } finally {
+      setDeletingId('')
+    }
+  }
 
   // 전체 페이지 수를 기반으로 페이지네이션 버튼에 쓸 번호 배열을 생성한다. (예: [1, 2, 3])
   const pageNumbers = useMemo(
@@ -139,6 +177,7 @@ function ProductListPage() {
 
         <section className="product-list-table-card">
           {error && <p className="product-list-state error">{error}</p>}
+          {message && <p className="product-list-state success">{message}</p>}
           {isLoading && <p className="product-list-state">상품 목록을 불러오는 중입니다.</p>}
           {!isLoading && !error && (
             <table className="product-list-table">
@@ -157,7 +196,7 @@ function ProductListPage() {
                   filteredProducts.map((product) => (
                     <tr
                       key={product.id}
-                      className="product-list-clickable-row"
+                      className={`product-list-clickable-row${product.isDeleted ? ' deleted' : ''}`}
                       // 행 클릭 시 해당 상품의 수정 페이지로 이동
                       onClick={() => navigate(`/admin/products/${product.id}/edit`)}
                     >
@@ -167,8 +206,8 @@ function ProductListPage() {
                         </div>
                       </td>
                       <td>
-                        <strong>{product.name}</strong>
-                        <span>{product.sku}</span>
+                        <strong>{product.isDeleted ? '삭제된 상품입니다.' : product.name}</strong>
+                        <span>{product.isDeleted ? `${product.name} · ${product.sku}` : product.sku}</span>
                       </td>
                       <td>{product.category}</td>
                       <td>
@@ -177,7 +216,13 @@ function ProductListPage() {
                           <span>{formatPrice(product.originalPrice, product.currency)}</span>
                         ) : null}
                       </td>
-                      <td>{product.stock ?? 0}</td>
+                      <td>
+                        {product.isDeleted ? (
+                          <span className="product-list-status deleted">미노출</span>
+                        ) : (
+                          product.stock ?? 0
+                        )}
+                      </td>
                       <td>
                         <div className="product-list-actions">
                           <button
@@ -193,11 +238,11 @@ function ProductListPage() {
                           </button>
                           <button
                             type="button"
-                            // 삭제 버튼(미구현): 행 클릭으로 인한 페이지 이동만 방지
-                            onClick={(event) => event.stopPropagation()}
+                            onClick={(event) => handleDeleteProduct(event, product)}
+                            disabled={product.isDeleted || deletingId === product.id}
                             aria-label={`${product.name} 삭제`}
                           >
-                            ♡
+                            {deletingId === product.id ? '…' : '🗑'}
                           </button>
                         </div>
                       </td>

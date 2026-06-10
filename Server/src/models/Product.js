@@ -72,6 +72,15 @@ const productSchema = new mongoose.Schema(
       trim: true,
       default: '',
     },
+    // 주문 이력이 있는 상품은 문서를 보존하되 외부 노출에서 제외합니다.
+    isDeleted: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+    deletedAt: {
+      type: Date,
+    },
   },
   // createdAt, updatedAt 자동 기록
   { timestamps: true }

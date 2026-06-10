@@ -156,6 +156,15 @@
   background: #fafafa;
 }
 
+.product-list-clickable-row.deleted {
+  background: #f9fafb;
+  color: #9ca3af;
+}
+
+.product-list-clickable-row.deleted:hover {
+  background: #f3f4f6;
+}
+
 .product-list-table td strong,
 .product-list-table td span {
   display: block;
@@ -200,6 +209,29 @@
   color: #e85b5b;
 }
 
+.product-list-actions button:disabled {
+  background: #f3f4f6;
+  color: #c0c4cc;
+  cursor: not-allowed;
+}
+
+.product-list-table td .product-list-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  height: 24px;
+  padding: 0 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.product-list-table td .product-list-status.deleted {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
 .product-list-state,
 .product-list-empty {
   padding: 2rem;
@@ -209,6 +241,10 @@
 
 .product-list-state.error {
   color: #c1121f;
+}
+
+.product-list-state.success {
+  color: #15803d;
 }
 
 .product-list-pagination {

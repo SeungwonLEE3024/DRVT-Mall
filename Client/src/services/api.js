@@ -26,6 +26,20 @@ export async function fetchProducts({ page = 1, limit = 2 } = {}) {
   return parseResponse(response)
 }
 
+export async function fetchAdminProducts(token, { page = 1, limit = 2 } = {}) {
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  })
+  const response = await fetch(`${API_BASE}/api/products/admin?${params.toString()}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  return parseResponse(response)
+}
+
 export async function fetchAllProducts() {
   return fetchProducts({ page: 1, limit: 1000 })
 }
@@ -165,6 +179,17 @@ export async function updateProduct(token, productId, product) {
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(product),
+  })
+
+  return parseResponse(response)
+}
+
+export async function deleteProduct(token, productId) {
+  const response = await fetch(`${API_BASE}/api/products/${productId}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   })
 
   return parseResponse(response)

@@ -1,4 +1,5 @@
 const Product = require('../models/Product');
+const OrderItem = require('../models/OrderItem');
 
 // MongoDB unique index 충돌 시 발생하는 오류 코드
 const DUPLICATE_KEY_CODE = 11000;
@@ -19,6 +20,8 @@ const formatProduct = (product) => ({
   image: product.image,
   images: product.images,
   description: product.description,
+  isDeleted: Boolean(product.isDeleted),
+  deletedAt: product.deletedAt,
   createdAt: product.createdAt,
   updatedAt: product.updatedAt,
 });
@@ -38,29 +41,42 @@ const handleDuplicateSku = (error, res) => {
   return true;
 };
 
-// 상품 목록을 최신순으로 조회합니다.
+const getPaginatedProducts = async (req, res, filter = {}) => {
+  const page = Math.max(parseInt(req.query.page, 10) || DEFAULT_PAGE, 1);
+  const limit = Math.max(parseInt(req.query.limit, 10) || DEFAULT_LIMIT, 1);
+  const skip = (page - 1) * limit;
+  const [products, total] = await Promise.all([
+    Product.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+    Product.countDocuments(filter),
+  ]);
+  const totalPages = Math.ceil(total / limit);
+
+  res.json({
+    success: true,
+    count: products.length,
+    total,
+    page,
+    limit,
+    totalPages,
+    hasNextPage: page < totalPages,
+    hasPrevPage: page > 1,
+    products: products.map(formatProduct),
+  });
+};
+
+// 상품 목록을 최신순으로 조회합니다. 공개 목록에서는 삭제 처리된 상품을 제외합니다.
 const getProducts = async (req, res, next) => {
   try {
-    const page = Math.max(parseInt(req.query.page, 10) || DEFAULT_PAGE, 1);
-    const limit = Math.max(parseInt(req.query.limit, 10) || DEFAULT_LIMIT, 1);
-    const skip = (page - 1) * limit;
-    const [products, total] = await Promise.all([
-      Product.find().sort({ createdAt: -1 }).skip(skip).limit(limit),
-      Product.countDocuments(),
-    ]);
-    const totalPages = Math.ceil(total / limit);
+    await getPaginatedProducts(req, res, { isDeleted: { $ne: true } });
+  } catch (error) {
+    next(error);
+  }
+};
 
-    res.json({
-      success: true,
-      count: products.length,
-      total,
-      page,
-      limit,
-      totalPages,
-      hasNextPage: page < totalPages,
-      hasPrevPage: page > 1,
-      products: products.map(formatProduct),
-    });
+// 관리자 상품 목록은 삭제 처리된 상품까지 포함해 조회합니다.
+const getAdminProducts = async (req, res, next) => {
+  try {
+    await getPaginatedProducts(req, res);
   } catch (error) {
     next(error);
   }
@@ -69,7 +85,7 @@ const getProducts = async (req, res, next) => {
 // 상품 상세 정보를 ID로 조회합니다.
 const getProduct = async (req, res, next) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findOne({ _id: req.params.id, isDeleted: { $ne: true } });
 
     if (!product) {
       return res.status(404).json({
@@ -155,10 +171,10 @@ const updateProduct = async (req, res, next) => {
   }
 };
 
-// 어드민이 상품을 삭제합니다.
+// 어드민이 상품을 삭제합니다. 주문 이력이 있으면 소프트 삭제하고, 없으면 실제 삭제합니다.
 const deleteProduct = async (req, res, next) => {
   try {
-    const product = await Product.findByIdAndDelete(req.params.id);
+    const product = await Product.findById(req.params.id);
 
     if (!product) {
       return res.status(404).json({
@@ -168,8 +184,36 @@ const deleteProduct = async (req, res, next) => {
       });
     }
 
+    if (product.isDeleted) {
+      return res.json({
+        success: true,
+        deletionType: 'soft',
+        message: 'Product is already hidden from customers',
+        product: formatProduct(product),
+      });
+    }
+
+    const hasOrderItems = await OrderItem.exists({ product: product._id });
+
+    if (hasOrderItems) {
+      product.isDeleted = true;
+      product.deletedAt = new Date();
+      product.stock = 0;
+      await product.save();
+
+      return res.json({
+        success: true,
+        deletionType: 'soft',
+        message: 'Product has order history and was hidden from customers',
+        product: formatProduct(product),
+      });
+    }
+
+    await product.deleteOne();
+
     res.json({
       success: true,
+      deletionType: 'hard',
       message: 'Product deleted successfully',
       product: formatProduct(product),
     });
@@ -180,6 +224,7 @@ const deleteProduct = async (req, res, next) => {
 
 module.exports = {
   getProducts,
+  getAdminProducts,
   getProduct,
   createProduct,
   updateProduct,

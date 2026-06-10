@@ -1,6 +1,7 @@
 const express = require('express');
 const {
   getProducts,
+  getAdminProducts,
   getProduct,
   createProduct,
   updateProduct,
@@ -20,6 +21,9 @@ const router = express.Router();
 
 // 전체 상품 목록을 페이지네이션으로 조회합니다. 쇼핑몰 화면에서도 필요하므로 공개 API로 제공합니다.
 router.get('/', productPaginationRules, validate, getProducts);
+
+// 관리자 상품 목록은 삭제 처리된 상품까지 포함합니다.
+router.get('/admin', auth, admin, productPaginationRules, validate, getAdminProducts);
 
 // 상품 ID로 단일 상품의 상세 정보를 조회합니다.
 router.get('/:id', mongoIdRule, validate, getProduct);

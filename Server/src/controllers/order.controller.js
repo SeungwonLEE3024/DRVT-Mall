@@ -174,7 +174,7 @@ const createOrder = async (req, res, next) => {
     }
 
     const productIds = items.map((item) => item.productId);
-    const products = await Product.find({ _id: { $in: productIds } });
+    const products = await Product.find({ _id: { $in: productIds }, isDeleted: { $ne: true } });
     const productMap = new Map(products.map((product) => [product._id.toString(), product]));
 
     const orderItems = items.map((item) => {
